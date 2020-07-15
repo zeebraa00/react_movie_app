@@ -1,52 +1,56 @@
 import React from 'react';
+import axios from 'axios';
+import Movie from './Movie';
+import './App.css'
 
-// App 클래스는 React.Component를 상속받았다. 즉, React.Component 클래스의 기능을 추가한 App 클래스
-// 클래스형 컴포넌트를 사용하는 이유 : state를 사용하기 위해서
 class App extends React.Component {
-
-  constructor(props) {
-    super(props);
-    console.log('hello');
-  }
-
   state = {
-    count : 0,
+    isLoading : true,
+    movies : [],
   };
-
-  add = () => {
-    this.setState(current => ({ // current에는 현재 state가 넘어온다
-      count : current.count + 1
-    }))
-  }
-
-  minus = () => {
-    this.setState(current => ({
-      count : current.count - 1
-    }))
-  }
-
-  componentDidMount() {
-    console.log('component rendered')
-  }
-
-  componentDidUpdate() {
-    console.log('i just updated')
-  }
-
-  componentWillUnmount() {
-    console.log('goodbye')
-  }
-
+  getMovies = async () => { // async 함수는 기다려줘야해
+    const {
+      data : {
+        data : {movies},
+      },
+    } = await axios.get("http://yts-proxy.now.sh/list_movies.json?sort_by=rating"); // axios.get 이 될 때까지
+    // 구조분해할당 한 것임 : console.log(movies.data.data.movies) 랑 같음
+    this.setState({ movies, isLoading : false }) // ES6 문법 : key : value 같으면 하나만 써도 됨 {movies : movies} = {movies}
+    
+  };
+  componentDidMount () {
+    // 영화 데이터 로딩이 완료되면,
+    this.getMovies();
+  };
   render() {
-    console.log('rendering')
+    const {isLoading, movies} = this.state; // 구조분해 할당을 이용해서 this.state에 있는 isLoading을 
     return (
-      <div>
-        <h1> The number is {this.state.count} </h1>
-        <button onClick={this.add}>Add</button>
-        <button onClick={this.minus}>Minus</button>
-      </div>
-    );
-  }
+      <section class="container">
+        {isLoading  ? (
+          <div class="movoies">
+            <span class="loader_text">Loading...</span>
+          </div>
+        ) : (
+          <div class="movies">
+            {
+              movies.map((movie) => {
+                console.log(movie);
+                return (
+                  <Movie
+                    key={movie.id}
+                    id={movie.id}
+                    year={movie.year}
+                    title={movie.title}
+                    summary={movie.summary}
+                    poster={movie.medium_cover_image}
+                  />
+                )
+              })
+            }
+          </div>
+        )}
+      </section>
+  )}
 }
 
 export default App;
