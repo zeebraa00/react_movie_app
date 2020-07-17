@@ -13,7 +13,7 @@ class Home extends React.Component {
       data : {
         data : {movies},
       },
-    } = await axios.get("http://yts-proxy.now.sh/list_movies.json?sort_by=rating"); // axios.get 이 될 때까지
+    } = await axios.get("https://yts-proxy.now.sh/list_movies.json?sort_by=rating"); // axios.get 이 될 때까지
     // 구조분해할당 한 것임 : console.log(movies.data.data.movies) 랑 같음
     this.setState({ movies, isLoading : false }) // ES6 문법 : key : value 같으면 하나만 써도 됨 {movies : movies} = {movies}
     
